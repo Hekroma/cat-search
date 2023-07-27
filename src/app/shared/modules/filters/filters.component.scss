@@ -1,0 +1,16 @@
+form {
+  display: flex;
+  justify-content: space-between;
+
+  mat-form-field:first-of-type {
+    width: 400px;
+    margin-right: 40px;
+  }
+
+  button {
+    height: 56px;
+    margin-left: 40px;
+    width: 140px;
+  }
+
+}
