@@ -1,6 +1,11 @@
 <mat-card class="example-card">
   <mat-card-header>
-    <mat-card-title>{{ itemData.breeds[0].name }}</mat-card-title>
+    <mat-card-title *ngIf="itemData?.breeds[0]?.name; else noBreeds ">
+      {{ itemData?.breeds[0]?.name }}
+    </mat-card-title>
+    <ng-template #noBreeds>
+      <mat-card-title>A cat without a breed</mat-card-title>
+    </ng-template>
   </mat-card-header>
   <img mat-card-image [src]="itemData.url" alt="Photo of a Shiba Inu">
 </mat-card>

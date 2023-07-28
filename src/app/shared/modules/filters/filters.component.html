@@ -1,6 +1,6 @@
 <form [formGroup]="form">
   <mat-form-field>
-    <mat-label>Toppings</mat-label>
+    <mat-label>Cats Breed</mat-label>
     <mat-select formControlName="breed_ids" multiple (selectionChange)="onSelectionChange($event)">
       <mat-option *ngFor="let breed of breedsList$ | async" [value]="breed.id">{{breed.name}}</mat-option>
     </mat-select>

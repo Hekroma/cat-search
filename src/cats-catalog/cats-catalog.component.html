@@ -1,7 +1,7 @@
 <div class="wrapper">
   <h1>Cute cats</h1>
   <app-filters (newListEmit)="newListEmit($event)"></app-filters>
-  <div class="items-list">
+  <div class="items-list" *ngIf="itemsList.length > 0">
     <app-item-card *ngFor="let item of itemsList" [itemData]="item"></app-item-card>
   </div>
 </div>

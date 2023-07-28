@@ -1,6 +1,6 @@
 .wrapper {
   height: 100%;
-  padding: 75px 120px;
+  margin: 75px 220px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -9,6 +9,6 @@
 
 .items-list {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   gap: 20px;
 }

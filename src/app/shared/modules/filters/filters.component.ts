@@ -1,10 +1,11 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { CatalogService } from "@core/services/catalog.service";
 import { FormControl, FormGroup } from "@angular/forms";
-import { debounceTime, distinctUntilChanged, Observable, Subject, switchMap } from "rxjs";
+import { catchError, debounceTime, distinctUntilChanged, Observable, Subject, switchMap, throwError } from "rxjs";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ActivatedRoute } from "@angular/router";
-import { isEqual } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
+
 
 @UntilDestroy()
 @Component({
@@ -28,17 +29,22 @@ export class FiltersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.form = new FormGroup({
       breed_ids: new FormControl(),
-      limit: new FormControl(10)
+      limit: new FormControl()
     });
 
     this.route.queryParams
       .pipe(
         untilDestroyed(this),
         switchMap((res: any) => {
+          const queryParams = cloneDeep(res); 
+          if(!queryParams.limit) {
+            queryParams.limit = '10';
+          }
+
           const params = {} as any;
           // convert query params of breed_ids from string to arr
-          Object.keys(res).forEach((key) => {
-            const value = res[key];
+          Object.keys(queryParams).forEach((key) => {
+            const value = queryParams[key];
 
             if (key == 'breed_ids') {
               params.breed_ids = value.split(',')
@@ -46,8 +52,15 @@ export class FiltersComponent implements OnInit, OnDestroy {
               params[key] = value
             }
           });
+
           this.form.patchValue(params); // update form value
-          return this.catalogService.getCatalogItemsList(res);
+          
+          return this.catalogService.getCatalogItemsList(queryParams).pipe(
+            catchError(err => {
+              console.log(err)
+              return [];
+            })
+          );
         })
       )
       .subscribe(res => this.newListEmit.emit(res));
@@ -62,7 +75,10 @@ export class FiltersComponent implements OnInit, OnDestroy {
       )
       .subscribe(_ => {
         const params = this.form.value;
-        params.breed_ids = params.breed_ids.join(',');
+        if (params.breed_ids) {
+          params.breed_ids = params.breed_ids.join(',');
+        }
+        
         this.catalogService.setQueryParams(this.form.value);
       })
   }
@@ -74,6 +90,7 @@ export class FiltersComponent implements OnInit, OnDestroy {
   public resetFilters(): void {
     this.form.reset();
     this.catalogService.setQueryParams();
+    
   }
 
   ngOnDestroy(): void {
